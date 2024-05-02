@@ -11,39 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-steps:
-  - name: 'node:17-slim'
-    args:
-      - ci
-    entrypoint: npm
-  - name: 'node:17-slim'
-    args:
-      - run
-      - build
-    entrypoint: npm
-  - name: 'google/cloud-sdk:slim'
-    args:
-      - gsutil
-      - '-m'
-      - cp
-      - '-r'
-      - '-Z'  # gzip
-      - dist/
-      - 'gs://$_BUCKET/$REPO_NAME/$_PATH'
-  # remove following after https://github.com/google/playground-elements/pull/279
-  - name: 'google/cloud-sdk:slim'
-    args:
-      - gsutil
-      - '-m'
-      - setmeta
-      - '-h'
-      - 'content-type:video/mp2t'
-      - 'gs://$_BUCKET/$REPO_NAME/$_PATH/**/*.ts'
-  - name: 'google/cloud-sdk:slim'
-    args:
-      - gsutil
-      - cors 
-      - set
-      - 'cors.json'
-      - 'gs://$_BUCKET'
